@@ -12,8 +12,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        node: [22, 24]
-        go: [1.23.x, 1.24.x, 1.25.x]
+        node: [24]
+        go: [1.24.x, 1.25.x]
     env:
       GO111MODULE: on
       PULUMI_STACK: production
