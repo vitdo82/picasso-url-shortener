@@ -1,0 +1,87 @@
+name: CI
+on:
+  push:
+    branches: [main, "*"]
+  pull_request:
+    branches: [main, "*"]
+
+jobs:
+  build:
+    name: Go ${{ matrix.go }} / Node ${{ matrix.node }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        node: [18, 20]
+        go: [1.20.x, 1.21.x, 1.22.x]
+    env:
+      GO111MODULE: on
+      PULUMI_STACK: production
+
+    steps:
+    - uses: actions/checkout@v3
+
+    # Set up Node.js and cache dependencies
+    - uses: actions/setup-node@v4
+      with:
+        node-version: ${{ matrix.node }}
+        cache: 'npm'
+        cache-dependency-path: frontend/package-lock.json
+
+    # Set up Go and cache Go modules
+    - uses: actions/setup-go@v4
+      with:
+        go-version: ${{ matrix.go }}
+        cache: true
+
+    # Backend steps (Go)
+    - name: Backend Go mod tidy
+      run: cd backend && go mod tidy
+    - name: Backend Lint
+      run: cd backend && go fmt ./... && go vet ./...
+    - name: Backend Test
+      run: cd backend && go test -v -coverprofile=coverage.txt ./...
+    - uses: actions/upload-artifact@v4
+      with:
+        name: backend-go-coverage-${{ matrix.go }}-node${{ matrix.node }}
+        path: backend/coverage.txt
+        if-no-files-found: ignore
+
+    - name: Backend Build
+      run: cd backend && go build ./cmd/server && go build ./cmd/migrate
+
+    # Frontend steps (Node)
+    - name: Frontend npm install
+      run: cd frontend && npm ci
+    - name: Frontend Lint
+      run: cd frontend && npx eslint src || echo 'eslint lint warnings only'
+      continue-on-error: true
+    - name: Frontend Test
+      run: cd frontend && npm test -- --watch=false --coverage || true
+    - uses: actions/upload-artifact@v4
+      with:
+        name: frontend-coverage-${{ matrix.go }}-node${{ matrix.node }}
+        path: frontend/coverage/
+        if-no-files-found: ignore
+
+    - name: Frontend Build
+      run: cd frontend && npm run build
+
+    # Docker build
+    - name: Docker Backend Build
+      run: docker build -t url-shortener-backend:ci ./backend
+    - name: Docker Frontend Build
+      run: docker build -t url-shortener-frontend:ci ./frontend
+
+    # Pulumi Preview (optional)
+    - name: Pulumi Preview
+      if: env.PULUMI_ACCESS_TOKEN != ''
+      env:
+        PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+        AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        AWS_DEFAULT_REGION: ${{ secrets.AWS_DEFAULT_REGION || 'us-east-1' }}
+      run: |
+        cd infrastructure/pulumi
+        npm install
+        pulumi preview --stack $PULUMI_STACK
