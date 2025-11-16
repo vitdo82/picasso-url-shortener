@@ -1,5 +1,9 @@
 # Picasso URL Shortener
 
+![Picasso UI](image/picasso-url-shortener.png)
+
+_A Picasso-inspired palette, bold shapes, and modern forms._
+
 A full-stack URL shortener application built with Go backend and React frontend.
 
 ## Project Structure
