@@ -1,0 +1,19 @@
+# Pulumi
+.pulumi/
+*.yaml.bak
+*.yaml.orig
+
+# Node
+node_modules/
+bin/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+

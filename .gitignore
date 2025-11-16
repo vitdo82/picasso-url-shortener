@@ -1,0 +1,55 @@
+# Dependencies
+node_modules/
+vendor/
+
+# Build outputs
+dist/
+build/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Logs
+*.log
+logs/
+
+# Database
+*.db
+*.sqlite
+*.sqlite3
+
+# Go specific
+go.work
+go.work.sum
+
+# Compiled binaries (created by go build)
+backend/migrate
+backend/server
+backend/*.exe
+backend/*.test
+
+# Frontend build
+frontend/dist/
+frontend/build/
+
+# Coverage
+coverage/
+*.coverprofile
+

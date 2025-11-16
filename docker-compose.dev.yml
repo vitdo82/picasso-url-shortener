@@ -1,0 +1,19 @@
+version: '3.8'
+
+# Development override file
+# Use with: docker-compose -f docker-compose.yml -f docker-compose.dev.yml up
+
+services:
+  postgres:
+    environment:
+      # Override for development if needed
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    # Enable logging for development
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+

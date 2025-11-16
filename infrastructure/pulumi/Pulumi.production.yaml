@@ -1,0 +1,10 @@
+config:
+  url-shortener:projectName: url-shortener
+  url-shortener:environment: production
+  url-shortener:region: us-east-1
+  url-shortener:dbName: urlshortener
+  url-shortener:dbUser: postgres
+  url-shortener:baseUrl: https://yourdomain.com
+  url-shortener:backendImage: url-shortener-backend:latest
+  url-shortener:frontendImage: url-shortener-frontend:latest
+

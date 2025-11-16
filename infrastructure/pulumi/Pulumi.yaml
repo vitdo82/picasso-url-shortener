@@ -1,0 +1,4 @@
+name: url-shortener
+runtime: nodejs
+description: URL Shortener infrastructure on AWS Lightsail Containers
+
